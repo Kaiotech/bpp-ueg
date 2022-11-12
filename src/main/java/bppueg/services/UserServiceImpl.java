@@ -2,19 +2,16 @@ package bppueg.services;
 
 import bppueg.entity.UserEntity;
 import bppueg.repositories.UserRepository;
+import bppueg.web.controller.NotFoundException;
 import bppueg.web.mappers.UserMapper;
-import bppueg.web.mappers.UserMapperDecorator;
 import bppueg.web.model.UserDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -23,8 +20,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper mapper;
     @Override
-    public UserDto getById(UUID id) throws ChangeSetPersister.NotFoundException {
-        return mapper.userToUserDto(userRepository.findById(id).orElseThrow(ChangeSetPersister.NotFoundException::new));
+    public UserDto getById(UUID id) {
+        return mapper.userToUserDto(userRepository.findById(id).orElseThrow(NotFoundException::new));
     }
 
     @Override
