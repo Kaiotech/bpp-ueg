@@ -6,10 +6,9 @@ import bppueg.web.controller.NotFoundException;
 import bppueg.web.mappers.UserMapper;
 import bppueg.web.model.UserDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -21,44 +20,48 @@ public class UserServiceImpl implements UserService {
     private final UserMapper mapper;
     @Override
     public UserDto getById(UUID id) {
+
         return mapper.userToUserDto(userRepository.findById(id).orElseThrow(NotFoundException::new));
     }
 
     @Override
     public UserDto createUser(UserDto userDto) {
 
-        return null;
+        if (userRepository.findAllByUsername(userDto.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("User already exist");
+        } else if (userRepository.findAllByEmail(userDto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("User already exist");
+        }
+
+        UserEntity userEntity = mapper.userDtoToUser(userDto);
+        userRepository.save(userEntity);
+        return mapper.userToUserDto(userEntity);
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto) {
-        return null;
+    public UserDto updateUser(UUID id, UserDto userDto) {
+        UserEntity userEntity = userRepository.findById(id).orElseThrow(NotFoundException::new);
+
+        userEntity.setUsername(userDto.getUsername());
+        userEntity.setEmail(userDto.getEmail());
+
+        return mapper.userToUserDto(userRepository.save(userEntity));
     }
 
     @Override
     public List<UserDto> getUsers(String username, String email, PageRequest pageRequest) {
-//        List<UserDto> userDtoList;
-//        Page<UserEntity> userEntities;
-//
-//        if (!StringUtils.isEmpty(username) && !StringUtils.isEmpty(email)) {
-//            userEntities = userRepository.findAllByUsernameAndEmail(username, email, pageRequest);
-//        } else if (!StringUtils.isEmpty(username) && StringUtils.isEmpty(email)) {
-//            userEntities = userRepository.findAllByUsername(username, pageRequest);
-//        } else if (StringUtils.isEmpty(username) && !StringUtils.isEmpty(email)) {
-//            userEntities = userRepository.findAllByEmail(email, pageRequest);
-//        } else {
-//            userEntities = userRepository.findAll(pageRequest);
-//        }
-        List<UserDto> userDtoList = new ArrayList<UserDto>();
-        Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize());
-        Page<UserEntity> userEntities = userRepository.findAll(pageable);
 
-        List<UserEntity> userEntityList = userEntities.getContent();
+        Optional<UserEntity> userEntity;
 
-        for (UserEntity userEntity : userEntityList) {
-            UserDto userDto = mapper.userToUserDto(userEntity);
-            userDtoList.add(userDto);
+        if (!StringUtils.isEmpty(username) && !StringUtils.isEmpty(email)) {
+            userEntity = userRepository.findAllByUsernameAndEmail(username, email);
+        } else if (!StringUtils.isEmpty(username) && StringUtils.isEmpty(email)) {
+            userEntity = userRepository.findAllByUsername(username);
+        } else if (StringUtils.isEmpty(username) && !StringUtils.isEmpty(email)) {
+            userEntity = userRepository.findAllByEmail(email);
         }
-        return userDtoList;
+
+
+        return null;
     }
 }

@@ -1,22 +1,18 @@
 package bppueg.web.controller;
 
 
-import bppueg.entity.UserEntity;
+
 import bppueg.services.UserService;
 import bppueg.web.mappers.UserMapper;
 import bppueg.web.model.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -51,20 +47,20 @@ public class UserController {
     }
 
     @GetMapping("users/{id}")
-    public ResponseEntity<UserDto> getById(@PathVariable("id") UUID id) throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity<UserDto> getById(@PathVariable("id") UUID id) {
 
         return new ResponseEntity<>(userService.getById(id), HttpStatus.OK);
     }
 
     @PostMapping(path = "/users")
-    public ResponseEntity createUser(@RequestBody @Validated UserDto userDto) {
+    public ResponseEntity<UserDto> createUser(@RequestBody @Validated UserDto userDto) {
 
         return new ResponseEntity<>(userService.createUser(userDto), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/users/{id}")
-    public ResponseEntity updateUser(@PathVariable("id") UUID id, @RequestBody @Validated UserDto userDto) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable("id") UUID id, @RequestBody @Validated UserDto userDto) {
 
-        return new ResponseEntity<>(userService.updateUser(userDto), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(userService.updateUser(id, userDto), HttpStatus.ACCEPTED);
     }
 }

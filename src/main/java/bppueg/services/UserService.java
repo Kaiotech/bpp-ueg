@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public interface UserService {
 
-    UserDto getById(UUID id) throws ChangeSetPersister.NotFoundException;
+    UserDto getById(UUID id);
 
     UserDto createUser(UserDto userDto);
 
-    UserDto updateUser(UserDto userDto);
+    UserDto updateUser(UUID id, UserDto userDto);
 
     List<UserDto> getUsers(String username, String email, PageRequest pageRequest);
 

@@ -4,10 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.UUID;
 
 @Getter
@@ -16,17 +13,17 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "UserTable2")
 public class UserEntity {
 
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Type(type="org.hibernate.type.UUIDCharType")
-    @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
     private UUID id;
 
     @Column(unique = true)
     private String username;
+    @Column
     private String password;
     @Column(unique = true)
     private String email;

@@ -3,16 +3,19 @@ package bppueg.repositories;
 import bppueg.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<UserEntity, UUID> {
+@Repository
+public interface UserRepository extends CrudRepository<UserEntity, UUID> {
 
-    Page<UserEntity> findAllByUsername(String username, Pageable pageable);
+    Optional<UserEntity> findAllByUsername(String username);
 
-    Page<UserEntity> findAllByEmail(String email, Pageable pageable);
+    Optional<UserEntity> findAllByEmail(String email);
 
-    Page<UserEntity> findAllByUsernameAndEmail(String username, String email, Pageable pageable);
+    Optional<UserEntity> findAllByUsernameAndEmail(String username, String email);
 
 }
